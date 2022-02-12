@@ -10,7 +10,8 @@ In the following list item number == submit number. Current best score should be
 
 3. `submission_pubchem_fingerprints.csv`: this uses my old solution from Learning to smell challenge, full code is given at `notebooks/eda_v1.ipynb`. (unsupervised, uses good precomputed fingerprints+k-nearest neighbours).
 
-    Score on challenge's leaderboard: **0.21455938697318**
+    Score on challenge's leaderboard: 0.21455938697318
 
-4. `submission_pubchem_fingerprints-2.csv` Require two active neighbours to classify as active.
+4. `submission_pubchem_fingerprints-2.csv` Require two active neighbours to classify as active. Except that uses the same notebook as was in the previous submit.
+
    Score on challenge's leaderboard: **0.29787234042553**
