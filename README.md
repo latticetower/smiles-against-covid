@@ -8,6 +8,9 @@ In the following list item number == submit number. Current best score should be
 
 2. "Lazy" baseline score (all 1): 0.068222621184919. This means that both train and test are imbalanced, test set has the same proportion of 1 and 0 as in the train test. Possible approaches to solve this using supervised methods include outlier detection algorithms or require data balancing.
 
-4. `submission_pubchem_fingerprints.csv`: this uses my old solution from Learning to smell challenge, full code is given at `notebooks/eda_v1.ipynb`. (unsupervised, uses good precomputed fingerprints+k-nearest neighbours).
+3. `submission_pubchem_fingerprints.csv`: this uses my old solution from Learning to smell challenge, full code is given at `notebooks/eda_v1.ipynb`. (unsupervised, uses good precomputed fingerprints+k-nearest neighbours).
 
     Score on challenge's leaderboard: **0.21455938697318**
+
+4. `submission_pubchem_fingerprints-2.csv` Require two active neighbours to classify as active.
+   Score on challenge's leaderboard: **0.29787234042553**
