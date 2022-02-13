@@ -1,0 +1,7 @@
+catboost
+tqdm
+pandas
+numpy
+matplotlib
+umap-learn
+scikit-learn

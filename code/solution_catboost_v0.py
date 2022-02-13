@@ -1,6 +1,5 @@
 """
 """
-from xml.sax.handler import all_properties
 import pandas as pd
 from pathlib import Path
 import numpy as np
