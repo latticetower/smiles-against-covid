@@ -32,7 +32,7 @@ if __name__ == '__main__':
     NFOLDS = 5
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
-    SAVE_DIR = Path("../models/")
+    SAVE_DIR = Path("../weights/")
     SAVE_DIR.mkdir(exist_ok=True)
     MODEL_PREFIX = (SAVE_DIR/ "cbt_fold_").as_posix()
     seed_everything(SEED)
