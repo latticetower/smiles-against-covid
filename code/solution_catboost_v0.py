@@ -37,8 +37,8 @@ if __name__ == '__main__':
     MODEL_PREFIX = (SAVE_DIR/ "cbt_fold_").as_posix()
     seed_everything(SEED)
     print("t")
-    train_df = pd.read_csv(Path("../data/train.csv"))
-    test_df = pd.read_csv(Path("../data/test.csv"))
+    train_df = pd.read_csv(Path("../data/train.csv"), index_col=0)
+    test_df = pd.read_csv(Path("../data/test.csv"), index_col=0)
     # print(train_df)
     train_fingerprints = get_compounds_fingerprints(
         train_df, cache_dir=str(TMP_DIR / "train"))
