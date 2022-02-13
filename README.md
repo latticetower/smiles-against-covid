@@ -14,4 +14,8 @@ In the following list item number == submit number. Current best score should be
 
 5. `submission_pubchem_fingerprints-2.csv` Require two active neighbours to classify as active. Except that uses the same notebook as was in the previous submit.
 
-   Score on challenge's leaderboard: **0.29787234042553**
+   Score on challenge's leaderboard: 0.29787234042553
+
+6. `catboost_predictions_v0.csv`: this was made with `code/solution_catboost_v0.py`. CatboostClassifier with auto class balancing+pubchem fingerprints as a features.
+
+    Score on challenge's leaderboard: **0.37096774193548**
