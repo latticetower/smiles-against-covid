@@ -15,7 +15,7 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
         fingerprint = smiles2pubchem(smiles)
         data = {
             smiles_column: smiles,
-            "fingerprint": fingerprint,
+            "fingerprint": [int(x) for x in fingerprint],
         }
         for col in additional_cols:
             if not col in data and col in df.columns:
@@ -24,7 +24,7 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
     return fingerprints
 
 def to_bits(x):
-    return x
+    return np.asarray(x)
 
 def get_compounds_fingerprints_old(df, cache_dir="temp/train", smiles_column="Smiles"):
     """Downloads precomputed fingerprints for compounds from pubchem and saves them to cache.

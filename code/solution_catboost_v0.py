@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from sklearn.metrics import f1_score
+import json
 
 from common.utils import seed_everything, train_cv, eval_cv, smiles2canonical
 from common.pubchem import get_compounds_fingerprints, to_bits
@@ -28,7 +29,7 @@ def get_predictions(
 
 
 if __name__ == '__main__':
-    SEED = 3407
+    SEED = 2407
     NFOLDS = 5
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
@@ -45,16 +46,31 @@ if __name__ == '__main__':
     
     SMILES_COL = "canonical"
     # print(train_df)
-    train_fingerprints = get_compounds_fingerprints(
-        train_df, cache_dir=str(TMP_DIR / "train"),
-        smiles_column=SMILES_COL,
-        additional_cols=["Smiles"]
-    )
-    test_fingerprints = get_compounds_fingerprints(
-        test_df, cache_dir=str(TMP_DIR/ "test"),
-        smiles_column=SMILES_COL,
-        additional_cols=["Smiles"]
-    )
+    TRAIN_FPATH = TMP_DIR/"train_fingerprints.json"
+    if TRAIN_FPATH.exists():
+        with open(TRAIN_FPATH.as_posix()) as f:
+            train_fingerprints = json.load(f)
+    else:
+        train_fingerprints = get_compounds_fingerprints(
+            train_df, cache_dir=str(TMP_DIR / "train"),
+            smiles_column=SMILES_COL,
+            additional_cols=["Smiles"]
+        )
+        with open(TRAIN_FPATH.as_posix(), 'w') as f:
+            json.dump(train_fingerprints, f)
+    TEST_FPATH = TMP_DIR/"test_fingerprints.json"
+    if TEST_FPATH.exists():
+        with open(TEST_FPATH.as_posix()) as f:
+            test_fingerprints = json.load(f)
+    else:
+        test_fingerprints = get_compounds_fingerprints(
+            test_df, cache_dir=str(TMP_DIR/ "test"),
+            smiles_column=SMILES_COL,
+            additional_cols=["Smiles"]
+        )
+        with open(TEST_FPATH.as_posix(), 'w') as f:
+            json.dump(test_fingerprints, f)
+
     train_fingerprints_df = pd.DataFrame(train_fingerprints)
     test_fingerprints_df = pd.DataFrame(test_fingerprints)
     train_df_ext = train_df.merge(train_fingerprints_df, on="Smiles", how="left")
@@ -80,12 +96,12 @@ if __name__ == '__main__':
             model_args=[],
             model_kwargs=dict(
                 iterations=NITERATIONS,
-                # "learning_rate": 0.1,
+                learning_rate= 0.01,
                 eval_metric="F1",
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=5,
+                depth=4,
                 use_best_model=False,
             ),
             model_random_state="random_state"
@@ -127,6 +143,6 @@ if __name__ == '__main__':
     # print(all_predictions[:10])
     print("Total 1 in test", all_predictions.sum())
     test_df_ext['Active'] = all_predictions
-    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_1.csv")
+    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_2.csv")
 
 
