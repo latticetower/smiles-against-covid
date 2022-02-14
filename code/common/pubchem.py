@@ -3,7 +3,7 @@ import os
 from tqdm.auto import tqdm
 import numpy as np
 import pubchempy as pcp
-from DeepPurpose.utils import smiles2pubchem
+from DeepPurpose.utils import smiles2pubchem, smiles2morgan
 
 
 def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles", additional_cols=[]):
@@ -13,9 +13,12 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
     for i in tqdm(df.index, total=df.shape[0]):
         smiles = df.loc[i, smiles_column]
         fingerprint = smiles2pubchem(smiles)
+        fingerprint2 = smiles2morgan(smiles)
         data = {
             smiles_column: smiles,
-            "fingerprint": [int(x) for x in fingerprint],
+            "fingerprint": [int(x) for x in fingerprint] + [int(x) for x in fingerprint2],
+            "cactvs": [int(x) for x in fingerprint],
+            "morgan": [int(x) for x in fingerprint2],
         }
         for col in additional_cols:
             if not col in data and col in df.columns:

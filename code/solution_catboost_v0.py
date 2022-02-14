@@ -96,12 +96,12 @@ if __name__ == '__main__':
             model_args=[],
             model_kwargs=dict(
                 iterations=NITERATIONS,
-                learning_rate= 0.01,
+                learning_rate= 0.02,
                 eval_metric="F1",
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=4,
+                depth=2,
                 use_best_model=False,
             ),
             model_random_state="random_state"
@@ -143,6 +143,6 @@ if __name__ == '__main__':
     # print(all_predictions[:10])
     print("Total 1 in test", all_predictions.sum())
     test_df_ext['Active'] = all_predictions
-    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_2.csv")
+    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_3.csv")
 
 

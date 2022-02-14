@@ -37,3 +37,6 @@ In the following list item number == submit number. Current best score should be
 
 18. `catboost_predictions_v0_2.csv`: tweak catboost params
     Score on a challenge's leaderboard: 0.2555
+
+19. `catboost_predictions_v0_3.csv`: tweak params, morgan+cactvs
+    Score on a challenge's leaderboard: 0.2596
