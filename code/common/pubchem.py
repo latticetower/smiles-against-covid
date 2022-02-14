@@ -2,11 +2,11 @@ import json
 import os
 from tqdm.auto import tqdm
 import numpy as np
-import base64
 import pubchempy as pcp
 from DeepPurpose.utils import smiles2pubchem
 
-def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles"):
+
+def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles", additional_cols=[]):
     """Downloads precomputed fingerprints for compounds from pubchem and saves them to
     """
     fingerprints = []
@@ -17,6 +17,9 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
             smiles_column: smiles,
             "fingerprint": fingerprint,
         }
+        for col in additional_cols:
+            if not col in data and col in df.columns:
+                data[col] = df.loc[i, col]
         fingerprints.append(data)
     return fingerprints
 

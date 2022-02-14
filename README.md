@@ -26,3 +26,11 @@ In the following list item number == submit number. Current best score should be
 
 14. `catboost_predictions_v0_1.csv`: set depth to 6 and rerun
     Score on a challenge's leaderboard: 0.3654
+
+15-16. 2 submits with DeepPurpose. Latest version of code is at notebooks/deep_purpose_v0.ipynb
+    Scores: ... and 0.2158 (more like terrible than great)
+
+    The 16th submit differs in terms of best model selection (I'm using PR AUC score for this) and data preprocessing (converting everything to canonical SMILES before processing).
+
+17. `catboost_predictions_v0_1.csv`: previous catboost submit was buggy, need to fix it
+    Score on a challenge's leaderboard: ???

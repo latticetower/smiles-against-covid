@@ -5,9 +5,10 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics import f1_score
 
-from common.utils import seed_everything, train_cv, eval_cv
+from common.utils import seed_everything, train_cv, eval_cv, smiles2canonical
 from common.pubchem import get_compounds_fingerprints, to_bits
 from models import CatboostClassifierWrapper
+
 
 def get_predictions(
             model_cls=CatboostClassifierWrapper, test_data=None, n_splits=3,
@@ -38,11 +39,22 @@ if __name__ == '__main__':
     print("t")
     train_df = pd.read_csv(Path("../data/train.csv"), index_col=0)
     test_df = pd.read_csv(Path("../data/test.csv"), index_col=0)
+    # clean up everything - convert to canonical smiles
+    train_df['canonical'] = train_df.Smiles.apply(smiles2canonical)
+    test_df['canonical'] = test_df.Smiles.apply(smiles2canonical)
+    
+    SMILES_COL = "canonical"
     # print(train_df)
     train_fingerprints = get_compounds_fingerprints(
-        train_df, cache_dir=str(TMP_DIR / "train"))
+        train_df, cache_dir=str(TMP_DIR / "train"),
+        smiles_column=SMILES_COL,
+        additional_cols=["Smiles"]
+    )
     test_fingerprints = get_compounds_fingerprints(
-        test_df, cache_dir=str(TMP_DIR/ "test"))
+        test_df, cache_dir=str(TMP_DIR/ "test"),
+        smiles_column=SMILES_COL,
+        additional_cols=["Smiles"]
+    )
     train_fingerprints_df = pd.DataFrame(train_fingerprints)
     test_fingerprints_df = pd.DataFrame(test_fingerprints)
     train_df_ext = train_df.merge(train_fingerprints_df, on="Smiles", how="left")
@@ -52,7 +64,7 @@ if __name__ == '__main__':
     print(test_df_ext.fingerprint.isnull().sum(), "test molecules have no associated fingerprint")
 
     train_df_ext = train_df_ext[~train_df_ext.fingerprint.isnull()]
-    train_fingerprints = train_df_ext.fingerprint.apply(to_bits)#lambda fingerprint_string: [x=='1' for x in fingerprint_string])
+    train_fingerprints = train_df_ext.fingerprint.apply(to_bits)  # lambda fingerprint_string: [x=='1' for x in fingerprint_string])
     train_fingerprints = np.stack(train_fingerprints.values)
     train_y = train_df_ext.Active.values
 
@@ -73,7 +85,7 @@ if __name__ == '__main__':
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=6,
+                depth=5,
                 use_best_model=False,
             ),
             model_random_state="random_state"

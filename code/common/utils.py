@@ -2,6 +2,8 @@ import numpy as np
 import random
 import torch
 from sklearn.model_selection import StratifiedKFold
+from rdkit.Chem import AllChem
+
 
 def seed_everything(seed=42):
     np.random.seed(seed)
@@ -44,4 +46,10 @@ def eval_cv(model_cls, dataset, n_splits=3, random_state=42, save_prefix="model_
         yield predictions
 
 
-
+def smiles2canonical(smiles):
+    m = AllChem.MolFromSmiles(smiles, sanitize=True)
+    # m = AllChem.AddHs(m)
+    # isomeric = AllChem.MolToSmiles(m, isomericSmiles=True)
+    canonical = AllChem.MolToSmiles(m, isomericSmiles=False, canonical=True)
+    return canonical
+    
