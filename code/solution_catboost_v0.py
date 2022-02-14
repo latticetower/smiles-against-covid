@@ -101,7 +101,7 @@ if __name__ == '__main__':
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=2,
+                depth=4,
                 use_best_model=False,
             ),
             model_random_state="random_state"
