@@ -23,3 +23,6 @@ In the following list item number == submit number. Current best score should be
 13. `catboost_predictions_v0_1.csv`: used pubchem's fingerprints computed by DeepPurpose.utils.smiles2pubchem function instead of precomputed ones (yes, there was a non-critical bug in my old code, and yes, these fingerprints differ). Using the same parameters as before.
 
     Score on a challenge's leaderboard: 0.3577
+
+14. `catboost_predictions_v0_1.csv`: set depth to 6 and rerun
+    Score on a challenge's leaderboard: 0.3654
