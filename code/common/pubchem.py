@@ -2,9 +2,28 @@ import json
 import os
 from tqdm.auto import tqdm
 import numpy as np
+import base64
 import pubchempy as pcp
+from DeepPurpose.utils import smiles2pubchem
 
 def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles"):
+    """Downloads precomputed fingerprints for compounds from pubchem and saves them to
+    """
+    fingerprints = []
+    for i in tqdm(df.index, total=df.shape[0]):
+        smiles = df.loc[i, smiles_column]
+        fingerprint = smiles2pubchem(smiles)
+        data = {
+            smiles_column: smiles,
+            "fingerprint": fingerprint,
+        }
+        fingerprints.append(data)
+    return fingerprints
+
+def to_bits(x):
+    return x
+
+def get_compounds_fingerprints_old(df, cache_dir="temp/train", smiles_column="Smiles"):
     """Downloads precomputed fingerprints for compounds from pubchem and saves them to cache.
     Returned cached versions.
     """
@@ -19,6 +38,10 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
             with open(fingerprint_path) as f:
                 try:
                     data = json.load(f)
+                    # if not 'fingerprint_bits' in data:
+                    #     smiles = data[smiles_column]
+                    #     pubchem_fingerprint = smiles2pubchem(smiles)
+                    #     data["fingerprint_bits"] = pubchem_fingerprint
                     fingerprints.append(data)
                 except:
                     print(f"Error {i}")
@@ -34,12 +57,14 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
         if compound is None:
             print(f"No compound {i} found, skipping molecule {smiles}" )
             continue
+        #pubchem_fingerprint = smiles2pubchem(smiles)
         if compound.fingerprint is None:
             print(f"No fingerprint for molecule {i} is found, skipping" )
             with open(fingerprint_path, 'w') as f:
                 data = {
                     smiles_column: smiles,
-                    "fingerprint": None
+                    "fingerprint": None,
+
                 }
                 json.dump(data, f)
         else:
@@ -48,18 +73,24 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
             with open(fingerprint_path, 'w') as f:
                 data = {
                     smiles_column: smiles,
-                    "fingerprint": compound.fingerprint
+                    "fingerprint": compound.fingerprint,
+                    # "fingerprint_bits": pubchem_fingerprint,
                 }
                 json.dump(data, f)
 
     return fingerprints
+        #unpacked = np.unpackbits(np.frombuffer(bytes.fromhex(x), dtype=np.uint8))
 
 
-def to_bits(x):
+def to_bits_old(x):
     try:
-        unpacked = np.unpackbits(np.frombuffer(bytes.fromhex(x), dtype=np.uint8))
+        unpacked = np.frombuffer(
+            bytes.fromhex(x[8:]),
+            dtype=np.uint8
+        )
+        unpacked = np.unpackbits(unpacked)
+        unpacked = unpacked[:-7]
     except Exception as e:
         print(e)
         print(x)
-        
     return unpacked

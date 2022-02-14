@@ -115,6 +115,6 @@ if __name__ == '__main__':
     # print(all_predictions[:10])
     print("Total 1 in test", all_predictions.sum())
     test_df_ext['Active'] = all_predictions
-    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0.csv")
+    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_1.csv")
 
 

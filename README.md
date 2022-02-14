@@ -19,3 +19,7 @@ In the following list item number == submit number. Current best score should be
 6. `catboost_predictions_v0.csv`: this was made with `code/solution_catboost_v0.py`. CatboostClassifier with auto class balancing+pubchem fingerprints as a features.
 
     Score on challenge's leaderboard: **0.37096774193548**
+
+13. `catboost_predictions_v0_1.csv`: used pubchem's fingerprints computed by DeepPurpose.utils.smiles2pubchem function instead of precomputed ones (yes, there was a non-critical bug in my old code, and yes, these fingerprints differ). Using the same parameters as before.
+
+    Score on a challenge's leaderboard: 0.3577
