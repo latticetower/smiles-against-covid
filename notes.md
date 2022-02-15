@@ -12,8 +12,8 @@ Papers and code to check, ideas to try, etc.
 
 # Approaches/ideas to try:
 - [ ] docking
-- [ ] EDA: group molecules in train dataset by Murcko scaffold and look at them
+- [x] EDA: group molecules in train dataset by Murcko scaffold and look at them (added `notebooks/datacomparison.ipynb` with this)
 - [ ] EDA: try to group pharmacophores I've generated and look at the results
-- [ ] make custom fingerprint with rdkit and use them with cactvs implemented at DeepPurpose
-- [ ] ChemBERTa: cookbook has smiles enumeration recipe for this
+- [ ] make custom fingerprint with rdkit and use them a) independently; b) with cactvs implemented at DeepPurpose
+- [ ] ChemBERTa: cookbook has smiles enumeration recipe for this+SentenceTransformer library
 - [ ] anonymize molecule to graph (one of the Hashes at the Cookbook, build GNN using it
