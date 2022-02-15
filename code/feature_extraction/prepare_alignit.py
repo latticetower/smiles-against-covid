@@ -3,7 +3,9 @@ embedded molecules as an input and
 and path to the directory where the pharmacophore files 
 will be saved.
 
-Produces pharmacophores defined at https://github.com/DrrDom/pmapper
+Uses the fork of align-it software from the Oliver B. Scott repo:
+https://github.com/OliverBScott/align-it/blob/main/example/pyalignit_demo.ipynb
+
 """
 import click
 import os
@@ -11,8 +13,9 @@ import warnings
 warnings.filterwarnings("ignore")
 from pathlib import Path
 from rdkit import Chem
+from rdkit.Chem import AllChem
 from tqdm.auto import tqdm
-from pmapper.pharmacophore import Pharmacophore as P
+import pyalignit
 
 def load_molecules(filename):
     with Chem.SDMolSupplier(filename.as_posix()) as suppl:
@@ -29,12 +32,13 @@ def main(path, output):
     output.mkdir(exist_ok=True)
     name, _ = os.path.splitext(path.name)
     print(f"Processing {name}")
+    filename = output / f"alignit_{name}.phar"
+    writer = pyalignit.PharmacophoreWriter(filename.as_posix())
     for i, mol in tqdm(enumerate(load_molecules(path))):
         # print(mol)
-        filename = output / f"{name}_{i}.pma"
-        p = P()
-        p.load_from_mol(mol)
-        p.save_to_pma(filename.as_posix())
+        p = pyalignit.CalcPharmacophore(mol)
+        writer.write(p)
+    writer.close()
 
 if __name__ == "__main__":
     main()

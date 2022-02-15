@@ -11,6 +11,8 @@ Currently no parameters (all parameters are hardcoded).
 Train data balancing is made now via catboost's auto_class_weights="Balanced" parameter.
 
 # Additional scripts
-1. `code/feature_extraction/prepare_molecules.py`: this scripts embeds molecules from train and test datasets, saves them for future use, computes (with align-it wrapper software) pharmacophores and saves them to the files.
+1. `code/feature_extraction/prepare_molecules.py`: this scripts embeds molecules from train and test datasets, saves them for future use
 
-2. 
+2. `code/feature_extraction/prepare_alignit.py`: from sdf with molecules computes (with align-it wrapper software) pharmacophores and saves them to the files.
+
+2. `code/feature_extraction/prepare_pmapper.py`: from sdf with molecules computes (with pmapper wrapper software) pharmacophores and saves them to the files.
