@@ -44,3 +44,7 @@ In the following list item number == submit number. Current best score should be
 20. depth=4, score=0.3125
 
 21. use stratifiedgroupkfold with tweaked params, score=0.2921
+
+22. tweak params 0.3607 (don't use standartise yet)
+
+23. with standartise on: 

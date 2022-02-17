@@ -7,7 +7,7 @@ from sklearn.metrics import f1_score
 import json
 
 from common.utils import seed_everything, train_cv, eval_cv
-from common.rdkit_utils import smiles2canonical
+from common.rdkit_utils import smiles2canonical, smiles2cleaned
 from common.pubchem import get_compounds_fingerprints, to_bits
 from common.rdkit_utils import get_murcko_scaffold
 from models import CatboostClassifierWrapper
@@ -32,7 +32,7 @@ def get_predictions(
 
 if __name__ == '__main__':
     SEED = 2407
-    NFOLDS = 5
+    NFOLDS = 7
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
     SAVE_DIR = Path("../weights/")
@@ -46,13 +46,16 @@ if __name__ == '__main__':
     train_df['canonical'] = train_df.Smiles.apply(smiles2canonical)
     test_df['canonical'] = test_df.Smiles.apply(smiles2canonical)
 
+    train_df['cleaned'] = train_df.Smiles.apply(smiles2cleaned)
+    test_df['cleaned'] = test_df.Smiles.apply(smiles2cleaned)
+
     train_df["murcko"] = train_df.canonical.apply(get_murcko_scaffold)
     # test_df["murcko"] = test_df.canonical.apply(get_murcko_scaffold)
 
     SMILES_COL = "canonical"
     # print(train_df)
     FINGERPRINT_COL="cactvs"
-    RECOMPUTE = False
+    RECOMPUTE = True
 
     TRAIN_FPATH = TMP_DIR/"train_fingerprints.json"
     if TRAIN_FPATH.exists() and not RECOMPUTE:
@@ -108,15 +111,15 @@ if __name__ == '__main__':
                 eval_metric="F1",
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
-                #auto_class_weights="Balanced",
-                depth=6,
+                auto_class_weights="Balanced",
+                depth=5,
                 use_best_model=False,
                 cat_features=np.arange(train_fingerprints.shape[1]),
             ),
             model_random_state="random_state",
             strategy="stratified+grouped",
             group_column=train_df["murcko"].values,
-            balance_train=True,
+            # balance_train=True,
         ):
         # (train_index, xtrain, ytrain, ptrain) = train_data
         (test_index, xtest, ytest, ptest) = test_data
