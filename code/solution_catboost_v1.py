@@ -32,7 +32,7 @@ def get_predictions(
 
 if __name__ == '__main__':
     SEED = 2407
-    NFOLDS = 11
+    NFOLDS = 7
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
     SAVE_DIR = Path("../weights/")
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     SMILES_COL = "canonical"  # before was: "canonical"
     # print(train_df)
     FINGERPRINT_COL="cactvs"
-    RECOMPUTE = True
+    RECOMPUTE = False
 
     TRAIN_FPATH = TMP_DIR/"train_fingerprints.json"
     if TRAIN_FPATH.exists() and not RECOMPUTE:
@@ -94,6 +94,21 @@ if __name__ == '__main__':
     train_fingerprints = train_df_ext[FINGERPRINT_COL].apply(to_bits)  # lambda fingerprint_string: [x=='1' for x in fingerprint_string])
     train_fingerprints = np.stack(train_fingerprints.values)
     train_y = train_df_ext.Active.values
+    train_group = train_df["murcko"].values
+
+    index = dict()
+    for i, row in enumerate(train_fingerprints):
+        if np.sum(row) == 0:
+            continue
+        if tuple(row) in index:
+            continue
+        index[tuple(row)] = len(index)
+    selected_ids = np.asarray(sorted(index.values()))
+
+    train_fingerprints = train_fingerprints[selected_ids]
+    train_y = train_y[selected_ids]
+    train_group = train_group[selected_ids]
+    print(train_y.sum())
 
     test_df_ext = test_df_ext[~test_df_ext.fingerprint.isnull()]
     test_fingerprints = test_df_ext[FINGERPRINT_COL].apply(to_bits)
@@ -112,13 +127,13 @@ if __name__ == '__main__':
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=5,
+                depth=3,
                 use_best_model=False,
                 cat_features=np.arange(train_fingerprints.shape[1]),
             ),
             model_random_state="random_state",
             strategy="stratified+grouped",
-            group_column=train_df["murcko"].values,
+            group_column=train_group,
             # balance_train=True,
         ):
         # (train_index, xtrain, ytrain, ptrain) = train_data
