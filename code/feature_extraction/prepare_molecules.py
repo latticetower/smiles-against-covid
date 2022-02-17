@@ -43,6 +43,7 @@ def make_molecule(smiles, seed=42, num_confs=3):
     params.randomConformers = num_confs
     params.useBasicKnowledge = True
     params.enforceChirality = True
+    #params.useExpTorsionAnglePrefs = True
     conf_ids = AllChem.EmbedMultipleConfs(
         ref, numConfs=num_confs, params=params
     )

@@ -16,7 +16,7 @@ def get_compounds_fingerprints(df, cache_dir="temp/train", smiles_column="Smiles
         fingerprint2 = smiles2morgan(smiles)
         data = {
             smiles_column: smiles,
-            "fingerprint": [int(x) for x in fingerprint] + [int(x) for x in fingerprint2],
+            "fingerprint": [int(x) for x in fingerprint],  # + [int(x) for x in fingerprint2],
             "cactvs": [int(x) for x in fingerprint],
             "morgan": [int(x) for x in fingerprint2],
         }

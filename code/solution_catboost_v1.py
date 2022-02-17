@@ -8,6 +8,7 @@ import json
 
 from common.utils import seed_everything, train_cv, eval_cv, smiles2canonical
 from common.pubchem import get_compounds_fingerprints, to_bits
+from common.rdkit_utils import get_murcko_scaffold
 from models import CatboostClassifierWrapper
 
 
@@ -43,11 +44,17 @@ if __name__ == '__main__':
     # clean up everything - convert to canonical smiles
     train_df['canonical'] = train_df.Smiles.apply(smiles2canonical)
     test_df['canonical'] = test_df.Smiles.apply(smiles2canonical)
-    
+
+    train_df["murcko"] = train_df.canonical.apply(get_murcko_scaffold)
+    # test_df["murcko"] = test_df.canonical.apply(get_murcko_scaffold)
+
     SMILES_COL = "canonical"
     # print(train_df)
+    FINGERPRINT_COL="cactvs"
+    RECOMPUTE = False
+
     TRAIN_FPATH = TMP_DIR/"train_fingerprints.json"
-    if TRAIN_FPATH.exists():
+    if TRAIN_FPATH.exists() and not RECOMPUTE:
         with open(TRAIN_FPATH.as_posix()) as f:
             train_fingerprints = json.load(f)
     else:
@@ -59,7 +66,7 @@ if __name__ == '__main__':
         with open(TRAIN_FPATH.as_posix(), 'w') as f:
             json.dump(train_fingerprints, f)
     TEST_FPATH = TMP_DIR/"test_fingerprints.json"
-    if TEST_FPATH.exists():
+    if TEST_FPATH.exists() and not RECOMPUTE:
         with open(TEST_FPATH.as_posix()) as f:
             test_fingerprints = json.load(f)
     else:
@@ -80,12 +87,12 @@ if __name__ == '__main__':
     print(test_df_ext.fingerprint.isnull().sum(), "test molecules have no associated fingerprint")
 
     train_df_ext = train_df_ext[~train_df_ext.fingerprint.isnull()]
-    train_fingerprints = train_df_ext.fingerprint.apply(to_bits)  # lambda fingerprint_string: [x=='1' for x in fingerprint_string])
+    train_fingerprints = train_df_ext[FINGERPRINT_COL].apply(to_bits)  # lambda fingerprint_string: [x=='1' for x in fingerprint_string])
     train_fingerprints = np.stack(train_fingerprints.values)
     train_y = train_df_ext.Active.values
 
     test_df_ext = test_df_ext[~test_df_ext.fingerprint.isnull()]
-    test_fingerprints = test_df_ext.fingerprint.apply(to_bits)
+    test_fingerprints = test_df_ext[FINGERPRINT_COL].apply(to_bits)
     test_fingerprints = np.stack(test_fingerprints.values)
 
     cv_y = []
@@ -103,9 +110,11 @@ if __name__ == '__main__':
                 auto_class_weights="Balanced",
                 depth=5,
                 use_best_model=False,
+                cat_features=np.arange(train_fingerprints.shape[1]),
             ),
             model_random_state="random_state",
-            strategy="stratified",
+            strategy="stratified+grouped",
+            group_column=train_df["murcko"].values,
         ):
         # (train_index, xtrain, ytrain, ptrain) = train_data
         (test_index, xtest, ytest, ptest) = test_data
@@ -144,6 +153,6 @@ if __name__ == '__main__':
     # print(all_predictions[:10])
     print("Total 1 in test", all_predictions.sum())
     test_df_ext['Active'] = all_predictions
-    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v0_3.csv")
+    test_df_ext[["Smiles", "Active"]].to_csv(TMP_DIR/"catboost_predictions_v1.csv")
 
 

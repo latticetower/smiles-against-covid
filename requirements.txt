@@ -4,7 +4,7 @@ pandas
 numpy
 matplotlib
 umap-learn
-scikit-learn
+scikit-learn>=1.0.0
 DeepPurpose
 pubchempy
 pmapper

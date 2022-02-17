@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import torch
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, StratifiedGroupKFold
 from rdkit.Chem import AllChem
 
 
@@ -12,14 +12,26 @@ def seed_everything(seed=42):
     pass
 
 
-def train_cv(model_cls, dataset, n_splits=3, random_state=42,
-             save_prefix="model_save", model_args=[], model_kwargs={}, model_random_state=None):
-    kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
-    # cat_features=np.arange(x_full_train.shape[1])
-    # NITERATIONS=1000
+def train_cv(
+        model_cls, dataset, n_splits=3, random_state=42,
+        save_prefix="model_save", model_args=[], model_kwargs={}, model_random_state=None,
+        strategy="stratified", group_column=None,
+        fit_kwargs={}
+    ):
+
     x_full_train, y_full_train = dataset
     split_data = dict()
-    for fold, (train_index, test_index) in enumerate(kf.split(x_full_train, y_full_train)):
+
+    if strategy == "stratified":
+        kf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        kfsplits = kf.split(x_full_train, y_full_train)
+    elif strategy == "stratified+grouped":
+        kf = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
+        kfsplits = kf.split(x_full_train, y_full_train, groups=group_column)
+
+    # cat_features=np.arange(x_full_train.shape[1])
+    # NITERATIONS=1000
+    for fold, (train_index, test_index) in enumerate(kfsplits):
         split_data[fold] = (train_index, test_index)
         x_train = x_full_train[train_index]
         y_train = y_full_train[train_index]
@@ -30,7 +42,7 @@ def train_cv(model_cls, dataset, n_splits=3, random_state=42,
         # next model-specific
         model = model_cls(*model_args, **model_kwargs)
         #train the model
-        model.fit(x_train, y_train, eval_set=(x_val, y_val))
+        model.fit(x_train, y_train, eval_set=(x_val, y_val), **fit_kwargs)
         # make the prediction using the resulting model
         pred_train = model.predict_proba(x_train)
         pred_val = model.predict_proba(x_val)
