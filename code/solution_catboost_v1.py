@@ -39,7 +39,7 @@ if __name__ == '__main__':
     SAVE_DIR.mkdir(exist_ok=True)
     MODEL_PREFIX = (SAVE_DIR/ "cbt_fold_").as_posix()
     seed_everything(SEED)
-    print("t")
+
     train_df = pd.read_csv(Path("../data/train.csv"), index_col=0)
     test_df = pd.read_csv(Path("../data/test.csv"), index_col=0)
     # clean up everything - convert to canonical smiles
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     train_df["murcko"] = train_df.canonical.apply(get_murcko_scaffold)
     # test_df["murcko"] = test_df.canonical.apply(get_murcko_scaffold)
 
-    SMILES_COL = "canonical"
+    SMILES_COL = "cleaned"  # before was: "canonical"
     # print(train_df)
     FINGERPRINT_COL="cactvs"
     RECOMPUTE = True

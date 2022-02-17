@@ -17,3 +17,4 @@ Papers and code to check, ideas to try, etc.
 - [ ] make custom fingerprint with rdkit and use them a) independently; b) with cactvs implemented at DeepPurpose
 - [ ] ChemBERTa: cookbook has smiles enumeration recipe for this+SentenceTransformer library
 - [ ] anonymize molecule to graph (one of the Hashes at the Cookbook, build GNN using it
+- [ ] check and clean data using this package https://github.com/flatkinson/standardiser/blob/master/standardiser/docs/06_alternative.ipynb

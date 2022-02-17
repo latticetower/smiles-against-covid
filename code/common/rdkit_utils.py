@@ -20,8 +20,13 @@ def smiles2cleaned(smiles):
     mol = AllChem.MolFromSmiles(smiles)
     parent = None
     try:
-        parent = standardise.apply(mol)
+        parent = standardise.run(mol)
     except standardise.StandardiseException as e:
         print(e.message)
         parent = mol
-    return AllChem.MolToSmiles(parent)
+    try:
+        parent = AllChem.MolToSmiles(parent, isomericSmiles=True, kekuleSmiles=False)
+    except Exception as e:
+        print("to smiles:", e.message)
+        parent = smiles
+    return parent
