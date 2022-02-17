@@ -48,3 +48,5 @@ In the following list item number == submit number. Current best score should be
 22. tweak params 0.3607 (don't use standartise yet)
 
 23. with standartise on: 0.3594
+
+24. use canonical, nfolds=11, 0.3387

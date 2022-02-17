@@ -32,7 +32,7 @@ def get_predictions(
 
 if __name__ == '__main__':
     SEED = 2407
-    NFOLDS = 7
+    NFOLDS = 11
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
     SAVE_DIR = Path("../weights/")
@@ -46,13 +46,13 @@ if __name__ == '__main__':
     train_df['canonical'] = train_df.Smiles.apply(smiles2canonical)
     test_df['canonical'] = test_df.Smiles.apply(smiles2canonical)
 
-    train_df['cleaned'] = train_df.Smiles.apply(smiles2cleaned)
-    test_df['cleaned'] = test_df.Smiles.apply(smiles2cleaned)
+    # train_df['cleaned'] = train_df.Smiles.apply(smiles2cleaned)
+    # test_df['cleaned'] = test_df.Smiles.apply(smiles2cleaned)
 
     train_df["murcko"] = train_df.canonical.apply(get_murcko_scaffold)
     # test_df["murcko"] = test_df.canonical.apply(get_murcko_scaffold)
 
-    SMILES_COL = "cleaned"  # before was: "canonical"
+    SMILES_COL = "canonical"  # before was: "canonical"
     # print(train_df)
     FINGERPRINT_COL="cactvs"
     RECOMPUTE = True
