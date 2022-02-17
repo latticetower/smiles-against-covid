@@ -12,11 +12,31 @@ def seed_everything(seed=42):
     pass
 
 
+def balance_data(y_train):
+    df, counts = np.unique(y_train, return_counts=True)
+    m = counts.max()
+    index = np.arange(len(y_train))
+    new_index = []
+    for i, c in zip(df, counts):
+        ids = y_train == i
+        values = index[ids]
+        if c == m:
+            new_index.extend(values)
+        else:
+            new_index.extend(np.random.choice(values, m))
+    np.random.shuffle(new_index)
+    return new_index
+
+
+def balance_data_df(train_df, target_col="Label"):
+    return balance_data(train_df[target_col].values)
+
 def train_cv(
         model_cls, dataset, n_splits=3, random_state=42,
         save_prefix="model_save", model_args=[], model_kwargs={}, model_random_state=None,
         strategy="stratified", group_column=None,
-        fit_kwargs={}
+        fit_kwargs={},
+        balance_train=False,
     ):
 
     x_full_train, y_full_train = dataset
@@ -37,6 +57,10 @@ def train_cv(
         y_train = y_full_train[train_index]
         x_val = x_full_train[test_index]
         y_val = y_full_train[test_index]
+        if balance_train:
+            balanced_index = balance_data(y_train)
+            x_train = x_train[balanced_index]
+            y_train = y_train[balanced_index]
         if model_random_state is not None:
             model_kwargs[model_random_state] = random_state + fold + 1
         # next model-specific
@@ -58,10 +82,4 @@ def eval_cv(model_cls, dataset, n_splits=3, random_state=42, save_prefix="model_
         yield predictions
 
 
-def smiles2canonical(smiles):
-    m = AllChem.MolFromSmiles(smiles, sanitize=True)
-    # m = AllChem.AddHs(m)
-    # isomeric = AllChem.MolToSmiles(m, isomericSmiles=True)
-    canonical = AllChem.MolToSmiles(m, isomericSmiles=False, canonical=True)
-    return canonical
     

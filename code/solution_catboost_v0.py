@@ -6,7 +6,8 @@ import numpy as np
 from sklearn.metrics import f1_score
 import json
 
-from common.utils import seed_everything, train_cv, eval_cv, smiles2canonical
+from common.utils import seed_everything, train_cv, eval_cv
+from common.rdkit_utils import smiles2canonical
 from common.pubchem import get_compounds_fingerprints, to_bits
 from models import CatboostClassifierWrapper
 

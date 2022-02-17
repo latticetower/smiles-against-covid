@@ -6,7 +6,8 @@ import numpy as np
 from sklearn.metrics import f1_score
 import json
 
-from common.utils import seed_everything, train_cv, eval_cv, smiles2canonical
+from common.utils import seed_everything, train_cv, eval_cv
+from common.rdkit_utils import smiles2canonical
 from common.pubchem import get_compounds_fingerprints, to_bits
 from common.rdkit_utils import get_murcko_scaffold
 from models import CatboostClassifierWrapper
@@ -107,14 +108,15 @@ if __name__ == '__main__':
                 eval_metric="F1",
                 metric_period=NITERATIONS//10,
                 # early_stopping_rounds=NITERATIONS//10*5,
-                auto_class_weights="Balanced",
-                depth=5,
+                #auto_class_weights="Balanced",
+                depth=6,
                 use_best_model=False,
                 cat_features=np.arange(train_fingerprints.shape[1]),
             ),
             model_random_state="random_state",
             strategy="stratified+grouped",
             group_column=train_df["murcko"].values,
+            balance_train=True,
         ):
         # (train_index, xtrain, ytrain, ptrain) = train_data
         (test_index, xtest, ytest, ptest) = test_data
@@ -143,6 +145,7 @@ if __name__ == '__main__':
     )
     print("----Predictions in test mode on train dataset----")
     print("Total 1 in train (run in test mode)", train_predictions.sum())
+    print("Guessed 1 correctly in train:", (train_predictions[train_y] == train_y[train_y]).sum())
     print("F1 score in train (run in test mode)", f1_score(train_y, train_predictions))
 
     print("----Predictions in test mode on test dataset----")

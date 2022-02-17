@@ -42,3 +42,5 @@ In the following list item number == submit number. Current best score should be
     Score on a challenge's leaderboard: 0.2596
 
 20. depth=4, score=0.3125
+
+21. use stratifiedgroupkfold with tweaked params, score=0.2921
