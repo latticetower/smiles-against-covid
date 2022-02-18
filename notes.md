@@ -15,6 +15,14 @@ Papers and code to check, ideas to try, etc.
 - [x] EDA: group molecules in train dataset by Murcko scaffold and look at them (added `notebooks/datacomparison.ipynb` with this)
 - [ ] EDA: try to group pharmacophores I've generated and look at the results
 - [ ] make custom fingerprint with rdkit and use them a) independently; b) with cactvs implemented at DeepPurpose
+- [ ] finish solution similar to the one published on aicrowd's discussions as top3 winning in Learning to smell challenge
+- [ ] make basic script with SentenceTransformers
 - [ ] ChemBERTa: cookbook has smiles enumeration recipe for this+SentenceTransformer library
 - [ ] anonymize molecule to graph (one of the Hashes at the Cookbook, build GNN using it
 - [ ] check and clean data using this package https://github.com/flatkinson/standardiser/blob/master/standardiser/docs/06_alternative.ipynb
+
+## Particular todos:
+- [ ] finish sentencetransformers code
+- [ ] read how to use smarts
+- [ ] add smarts-based fingerprint to custom ones and try this solution
+- [ ] use autocatboost?
