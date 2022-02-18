@@ -9,6 +9,12 @@ python solution_catboost_v0.py
 ```
 Currently no parameters (all parameters are hardcoded).
 Train data balancing is made now via catboost's auto_class_weights="Balanced" parameter.
+2. CatboostClassifier+assorted fingerprints
+
+```
+python solution_catboost_v2.py
+```
+This is not finished yet.
 
 # Additional scripts
 1. `code/feature_extraction/prepare_molecules.py`: this scripts embeds molecules from train and test datasets, saves them for future use
