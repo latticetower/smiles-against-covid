@@ -55,3 +55,5 @@ In the following list item number == submit number. Current best score should be
 
 26. Full fragment library based on train+MultinomialNB: 0.2637
 
+27. add opt theshold (the same idea for this as in the deeppurpose code): 0.3068
+
