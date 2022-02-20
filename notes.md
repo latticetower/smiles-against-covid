@@ -26,3 +26,7 @@ Papers and code to check, ideas to try, etc.
 - [ ] read how to use smarts
 - [ ] add smarts-based fingerprint to custom ones and try this solution
 - [ ] use autocatboost?
+- [ ] check out Dmitry's code, add balancing+rerun
+- [ ] use train dataset's full fragment library: filter with tfidf, train (i.e., MultinomialNB) classifier on it. Check out most importand features (and maybe limit them to top-200 features or so). Use them to make custom fingerprints, then retrain model only with them.
+- [ ] check out pharmacophores generated for pos labels of train dataset: try to align all, after that take a closer look. Maybe look for opensource tools for pharmacophore clustering? Or generate more pharmacophores (like 50) for each positive sample.
+
