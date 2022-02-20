@@ -57,3 +57,5 @@ In the following list item number == submit number. Current best score should be
 
 27. add opt theshold (the same idea for this as in the deeppurpose code): 0.3068
 
+28. use 1-mean active as a threshold. 0.3609
+
