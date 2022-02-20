@@ -53,3 +53,5 @@ In the following list item number == submit number. Current best score should be
 
 25. remove duplicates from train: didn't helped, 0.2887
 
+26. Full fragment library based on train+MultinomialNB: 0.2637
+
