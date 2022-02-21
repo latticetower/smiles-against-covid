@@ -59,3 +59,6 @@ In the following list item number == submit number. Current best score should be
 
 28. use 1-mean active as a threshold. 0.3609
 
+29. `notebooks/ensemble_submission.ipynb`: took 13 solutions and decide by voting, active or not. Score=0.3256
+
+
