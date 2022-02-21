@@ -61,4 +61,5 @@ In the following list item number == submit number. Current best score should be
 
 29. `notebooks/ensemble_submission.ipynb`: took 13 solutions and decide by voting, active or not. Score=0.3256
 
+30. `notebooks/ensemble_submission.ipynb`: remove several bad submissions(based on f1 score, even number of values), score = 0.3559
 
