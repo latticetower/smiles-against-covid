@@ -63,3 +63,10 @@ In the following list item number == submit number. Current best score should be
 
 30. `notebooks/ensemble_submission.ipynb`: remove several bad submissions(based on f1 score, even number of values), score = 0.3559
 
+31. Add balancing to solution with fragment descriptors. Score=0.3673
+
+32. Ensemble of everything, score=0.1692
+
+33. Only 2 best, score=0.3647
+
+34. Add filtering of fragment library to notebook with custom fragment library. Score=0.3135
