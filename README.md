@@ -82,3 +82,5 @@ In the following list item number == submit number. Current best score should be
 39. top4000, nfolds=15, score=0.3492
 
 40. fixed data cleaning. 0.2743
+
+41. top2000, folds=5, score=0.2932
