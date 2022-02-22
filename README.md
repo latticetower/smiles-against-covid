@@ -72,3 +72,7 @@ In the following list item number == submit number. Current best score should be
 34. Add filtering of fragment library to notebook with custom fragment library. Score=0.3135
 
 35. Using only top-3000 fragments, nFolds=11. score=0.3684
+
+36. Nfolds=5. 0.3129
+
+37. want top try without fragments filtering, with nfolds=11.
