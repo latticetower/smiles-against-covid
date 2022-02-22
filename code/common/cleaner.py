@@ -39,14 +39,14 @@ def clean_smiles(smiles):
         atom_names = name_regex.findall(part)
         has_carbon = len([name for name in atom_names if name.lower() == "c"])
         num_atoms = len(atom_names)
-        if has_carbon or num_atoms > 1:
+        if has_carbon and num_atoms > 1:
             resulting_parts.append(part)
     if len(resulting_parts) == 0:
         print("Cannot parse", parts)
         for part in parts:
             atom_names = name_regex.findall(part)
             num_atoms = len(set(atom_names))
-            if num_atoms > 2:
+            if len(atom_names) > 3:
                 resulting_parts.append(part)
         if len(resulting_parts) == 0:
             resulting_parts = parts
@@ -54,7 +54,8 @@ def clean_smiles(smiles):
     return smiles_new
 
 
-def split_df(df, target_col="Active", split_col="parts", index_col="original_index",
+def split_df(df, target_col="Active", split_col="parts",
+             index_col="original_index",
              smiles_col="Smiles",
              keep_columns=["Smiles"],
              renames={"part": "Smiles"}):
@@ -73,8 +74,11 @@ def split_df(df, target_col="Active", split_col="parts", index_col="original_ind
                     name = renames.get(col, col)
                     new_data[f"{prefix}_original_{name}"] = row[col]
         return new_data
-
-    if not split_col in df.columns:
+    
+    if index_col in df.columns:
+        print("Column", index_col, "is defined, doing nothing")
+        return df
+    if split_col not in df.columns:
         df[split_col] = df[smiles_col].apply(break_to_parts)
 
     df = df.apply(
@@ -94,7 +98,9 @@ def split_df(df, target_col="Active", split_col="parts", index_col="original_ind
     return df
 
 
-def collect_df(df, target_col="Active", split_col="parts", index_col="original_index", split_sep=".", keep_columns=["original_Smiles"]):
+def collect_df(df, target_col="Active", split_col="parts", 
+               index_col="original_index", split_sep=".",
+               keep_columns=["original_Smiles", "Smiles"]):
     """collects submolecules to dataset"""
     aggregations = dict()
     if split_col in df.columns:
@@ -103,4 +109,7 @@ def collect_df(df, target_col="Active", split_col="parts", index_col="original_i
     if target_col in df.columns:
         print("Found", target_col)
         aggregations[target_col] = lambda x: x.any()
+    for col in keep_columns:
+        if col  in df.columns:
+            aggregations[col] = lambda x: "first"
     return df.groupby(index_col).agg(aggregations)
