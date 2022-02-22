@@ -54,24 +54,28 @@ def clean_smiles(smiles):
     return smiles_new
 
 
-def split_df(df, target_col="Active", split_col="parts", index_col="original_index", keep_columns=["Smiles"],
+def split_df(df, target_col="Active", split_col="parts", index_col="original_index",
+             smiles_col="Smiles",
+             keep_columns=["Smiles"],
              renames={"part": "Smiles"}):
     """splits dataset to submolecules"""
-    def do_transform(x, parts_col="parts", target_col="Active", keep_columns=["Smiles"]):
-        parts = x[parts_col]
+    def do_transform(row, parts_col="parts", target_col="Active", keep_columns=["Smiles"]):
+        parts = row[parts_col]
         new_data = {}
         for i, part in enumerate(parts):
             prefix = f"part{i}"
-            name = renames.get("part", "part")
-            new_data[f"{prefix}_{name}"] = part
+            new_data[f"{prefix}_part"] = part
             new_data[f"{prefix}_num_{split_col}"] = len(parts)
-            if target_col in x:
-                new_data[f"{prefix}_{target_col}"] = x[target_col]
+            if target_col in row:
+                new_data[f"{prefix}_{target_col}"] = row[target_col]
             for col in keep_columns:
-                if col in x:
+                if col in row:
                     name = renames.get(col, col)
-                    new_data[f"{prefix}_{name}"] = x[col]
+                    new_data[f"{prefix}_original_{name}"] = row[col]
         return new_data
+
+    if not split_col in df.columns:
+        df[split_col] = df[smiles_col].apply(break_to_parts)
 
     df = df.apply(
         lambda x: do_transform(
@@ -85,12 +89,18 @@ def split_df(df, target_col="Active", split_col="parts", index_col="original_ind
     df.columns = pd.MultiIndex.from_arrays(zip(*col_index))
     df = df.stack(0).reset_index().drop('level_1', axis=1).rename(columns={"level_0": index_col})
     df = df.loc[~df.part.isnull()].reset_index(drop=True)
+    if "part" in renames:
+        df.rename(columns={"part": renames["part"]}, inplace=True)
     return df
 
 
-def collect_df(df, target_col="Active", split_col="parts", index_col="original_index", split_sep="."):
+def collect_df(df, target_col="Active", split_col="parts", index_col="original_index", split_sep=".", keep_columns=["original_Smiles"]):
     """collects submolecules to dataset"""
-    return df.groupby(index_col).agg({
-        split_col: lambda x: split_sep.join(x),
-        target_col: lambda x: x.any()
-    })
+    aggregations = dict()
+    if split_col in df.columns:
+        print("Found", split_col)
+        aggregations[split_col] = lambda x: split_sep.join(x)
+    if target_col in df.columns:
+        print("Found", target_col)
+        aggregations[target_col] = lambda x: x.any()
+    return df.groupby(index_col).agg(aggregations)
