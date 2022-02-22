@@ -77,3 +77,4 @@ In the following list item number == submit number. Current best score should be
 
 37. want top try without fragments filtering, with nfolds=11. Score=0.3234
 38. top2000, nfolds=11. score=0.3429
+39. top4000, nfolds=15, score=0.3492
