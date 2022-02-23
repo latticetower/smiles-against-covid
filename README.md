@@ -2,6 +2,9 @@
 
 Our team's solutions for https://globalai.innopolis.university/eng are collected here.
 
+![static-features](https://github.com/latticetower/smiles-against-covid/blob/main/data/pl2_with_ligand.png)
+
+
 ## Meaningful submits only are listed here - both with descriptions
 
 In the following list item number == submit number. Current best score should be **emphasized with bold font like this**. To teammates: if you submit something, please add score+description+code to the end of this list. This way we could remember what was submitted and when.
@@ -90,3 +93,5 @@ In the following list item number == submit number. Current best score should be
 43. Set catboost depth to 2, Score=0.1505
 
 44. Made my own val dataset, score still 0.2953
+
+45. Tried Chemberta, didn't end well. Score=0.04 or so, giving up for now :)
