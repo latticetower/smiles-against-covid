@@ -25,13 +25,13 @@ np.random.seed(SEED)
 random.seed(SEED)
 
 DATADIR = Path("../../data")
-train_df = pd.read_csv(DATADIR / "train.csv", index_col=0)
-test_df = pd.read_csv(DATADIR / "test.csv", index_col=0)
+train_df = pd.read_csv(DATADIR / "train_splitted_val.csv", index_col=0)
+test_df = pd.read_csv(DATADIR / "test_splitted.csv", index_col=0)
 
 OUTPUTDIR = Path("../../tmp/pharmacophores")
 OUTPUTDIR.mkdir(exist_ok=True)
 
-MOLDIR = OUTPUTDIR/ "molecules"
+MOLDIR = OUTPUTDIR/ "molecules_10"
 MOLDIR.mkdir(exist_ok=True)
 
 def make_molecule(smiles, seed=42, num_confs=3):
@@ -65,13 +65,15 @@ processed = {
     "train": [],
     "test": [],
 }
-num_confs = 3
+num_confs = 10
 for name, df in [("train", train_df), ("test", test_df)]:
     print("-------------\n-------\n---Starting to process", name)
     # pos_mols = dict()
-    for i, smiles in tqdm(enumerate(df.Smiles), total=df.shape[0]):
+    for i, (smiles, active) in tqdm(enumerate(df[["part", "Active"]].values), total=df.shape[0]):
         # smiles = train_df.loc[i, "Smiles"]
         mol, conf_id = make_molecule(smiles, seed=SEED + i, num_confs=num_confs)
+        activity = "active" if active else "inactive"
+        mol.SetProp("_Name", f"molecule_{i}-{activity}")
         # pos_mols[i] = mol
         if len(conf_id) == num_confs:
             processed[name].append(i)
