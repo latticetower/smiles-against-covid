@@ -59,6 +59,7 @@ if __name__ == '__main__':
 
     train_df = pd.read_csv(Path("../data/train.csv"), index_col=0)
     test_df = pd.read_csv(Path("../data/test.csv"), index_col=0)
+    train_df_val = pd.read_csv(Path("../data/train_splitted_val.csv"), index_col=0)
     # clean up everything - convert to canonical smiles
     train_df["cleaned"] = train_df.Smiles.apply(clean_smiles)
     test_df["cleaned"] = test_df.Smiles.apply(clean_smiles)
@@ -149,6 +150,7 @@ if __name__ == '__main__':
     train_fingerprints = train_df_ext[FINGERPRINT_COL].apply(to_bits)  # lambda fingerprint_string: [x=='1' for x in fingerprint_string])
     train_fingerprints = np.stack(train_fingerprints.values)
     train_y = train_df_ext.Active.values
+    validation_ids = train_df_val.loc[train_df_ext.index, "val_index"].values
     train_group = train_df_splitted["murcko_cleaned"].values
 
     # Next we filter train fingerprints
@@ -165,6 +167,7 @@ if __name__ == '__main__':
     train_fingerprints = train_fingerprints[selected_ids]
     train_y = train_y[selected_ids]
     train_group = train_group[selected_ids]
+    validation_ids = validation_ids[selected_ids]
     print("Samples with no duplicates:", train_y.sum(), train_y.shape)
 
     test_df_ext = test_df_ext[~test_df_ext.fingerprint.isnull()]
@@ -185,7 +188,7 @@ if __name__ == '__main__':
                 eval_metric="F1",
                 metric_period=NITERATIONS//10,
                 early_stopping_rounds=NITERATIONS//10*5,
-                auto_class_weights="Balanced",
+                # auto_class_weights="Balanced",
                 depth=2,
                 use_best_model=True,
                 # cat_features=np.arange(train_fingerprints.shape[1]),
@@ -200,7 +203,7 @@ if __name__ == '__main__':
             # model_random_state="random_seed",
             strategy="stratified+grouped",
             group_column=train_group,
-            # balance_train=True,
+            balance_train=True,
         ):
         # (train_index, xtrain, ytrain, ptrain) = train_data
         (test_index, xtest, ytest, ptest) = test_data
@@ -251,6 +254,8 @@ if __name__ == '__main__':
     print("Total 1 in train (run in test mode)", train_predictions.sum())
     print("Guessed 1 correctly in train:", (train_predictions[train_y] == train_y[train_y]).sum())
     print("F1 score in train (run in test mode)", f1_score(train_y, train_predictions))
+    score = f1_score(train_y[validation_ids], train_predictions[validation_ids])
+    print("F1 score on selected val dataset", score)
 
     print("----Predictions in test mode on test dataset----")
     all_predictions = get_predictions(

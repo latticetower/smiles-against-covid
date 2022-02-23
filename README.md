@@ -88,3 +88,5 @@ In the following list item number == submit number. Current best score should be
 42. Using cleaned data with catboost. Score=0.2556
 
 43. Set catboost depth to 2, Score=0.1505
+
+44. Made my own val dataset, score still 0.2953
