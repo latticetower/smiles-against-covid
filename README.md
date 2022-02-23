@@ -86,3 +86,5 @@ In the following list item number == submit number. Current best score should be
 41. top2000, folds=5, score=0.2932
 
 42. Using cleaned data with catboost. Score=0.2556
+
+43. Set catboost depth to 2, Score=0.1505

@@ -45,7 +45,7 @@ def get_predictions(
 
 if __name__ == '__main__':
     SEED = 2407
-    NFOLDS = 7
+    NFOLDS = 5
     NITERATIONS = 1000
     TMP_DIR = Path("../tmp/")
     SAVE_DIR = Path("../weights/")
@@ -186,7 +186,7 @@ if __name__ == '__main__':
                 metric_period=NITERATIONS//10,
                 early_stopping_rounds=NITERATIONS//10*5,
                 auto_class_weights="Balanced",
-                depth=5,
+                depth=2,
                 use_best_model=True,
                 # cat_features=np.arange(train_fingerprints.shape[1]),
                 random_strength=1,
@@ -276,6 +276,6 @@ if __name__ == '__main__':
     test_df = test_df.merge(test_df_ext, left_index=True, right_index=True)
     assert test_df.Active.isnull().sum() == 0
 
-    test_df.to_csv(TMP_DIR/"catboost_predictions_v2_cleaned.csv")
+    test_df.to_csv(TMP_DIR/"catboost_predictions_v2_cleaned_param.csv")
 
 
