@@ -4,12 +4,16 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import rdMolHash
 from standardiser import standardise
 
-def get_murcko_scaffold(smiles):
-    mol = Chem.MolFromSmiles(smiles)
+def get_murcko_scaffold(smiles, kekulize=True):
+    mol = Chem.MolFromSmiles(smiles)    
+    if kekulize:
+        Chem.Kekulize(mol)
+        canonical = Chem.MolToSmiles(mol, isomericSmiles=True, kekuleSmiles=True)
+    
     return rdMolHash.MolHash(mol, rdMolHash.HashFunction.MurckoScaffold)
 
 
-def smiles2canonical(smiles):
+def smiles2canonical(smiles, kekulize=True):
     m = AllChem.MolFromSmiles(smiles, sanitize=True)
     # m = AllChem.AddHs(m)
     # isomeric = AllChem.MolToSmiles(m, isomericSmiles=True)

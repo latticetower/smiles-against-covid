@@ -1,15 +1,20 @@
+
 import numpy as np
 import random
 import torch
+import os
 from sklearn.model_selection import StratifiedKFold, StratifiedGroupKFold
 from rdkit.Chem import AllChem
-
+from sklearn.metrics import roc_curve
 
 def seed_everything(seed=42):
-    np.random.seed(seed)
     random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
     torch.manual_seed(seed)
-    pass
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+
 
 
 def balance_data(y_train):
@@ -83,3 +88,25 @@ def eval_cv(model_cls, dataset, n_splits=3, random_state=42, save_prefix="model_
 
 
     
+def get_threshold(gt, predictions):
+    fpr, tpr, thresholds = roc_curve(
+        gt,
+        # train_df.Active.values,
+        predictions
+    )
+    pos = np.sum(gt)
+    neg = len(gt) - pos
+    
+    # print("pos=", pos, "neg=", neg)
+    tp = tpr * pos
+    fp = fpr * neg
+    # print("TP=", tp[:10])
+    # print("FP=", fp[:10])
+    fn = pos - tp
+    tn = neg - fp
+    # print("FN=", fn[:10])
+    f1 = 2*tp/(2*tp + fp+fn)
+    # print("F1=", f1[:10])
+    opt_tpr_fpr = np.argmax(f1)
+    optimal_threshold = thresholds[opt_tpr_fpr]
+    return optimal_threshold, f1[opt_tpr_fpr]

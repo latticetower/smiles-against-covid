@@ -31,7 +31,7 @@ def break_to_parts(smiles):
 
 def clean_smiles(smiles):
     parts = smiles.split(".")
-    parts = list(set(parts))
+    parts = sorted(set(parts))
     if len(parts) == 1:
         return ".".join(parts)
     resulting_parts = []
@@ -39,10 +39,10 @@ def clean_smiles(smiles):
         atom_names = name_regex.findall(part)
         has_carbon = len([name for name in atom_names if name.lower() == "c"])
         num_atoms = len(atom_names)
-        if has_carbon and num_atoms > 1:
+        if has_carbon or num_atoms > 1:
             resulting_parts.append(part)
     if len(resulting_parts) == 0:
-        print("Cannot parse", parts)
+        print("Cannot parse", parts, atom_names)
         for part in parts:
             atom_names = name_regex.findall(part)
             num_atoms = len(set(atom_names))
@@ -58,7 +58,7 @@ def split_df(df, target_col="Active", split_col="parts",
              index_col="original_index",
              smiles_col="Smiles",
              keep_columns=["Smiles"],
-             renames={"part": "Smiles"}):
+             renames={}):
     """splits dataset to submolecules"""
     def do_transform(row, parts_col="parts", target_col="Active", keep_columns=["Smiles"]):
         parts = row[parts_col]
@@ -74,7 +74,7 @@ def split_df(df, target_col="Active", split_col="parts",
                     name = renames.get(col, col)
                     new_data[f"{prefix}_original_{name}"] = row[col]
         return new_data
-    
+
     if index_col in df.columns:
         print("Column", index_col, "is defined, doing nothing")
         return df
@@ -93,8 +93,13 @@ def split_df(df, target_col="Active", split_col="parts",
     df.columns = pd.MultiIndex.from_arrays(zip(*col_index))
     df = df.stack(0).reset_index().drop('level_1', axis=1).rename(columns={"level_0": index_col})
     df = df.loc[~df.part.isnull()].reset_index(drop=True)
-    if "part" in renames:
-        df.rename(columns={"part": renames["part"]}, inplace=True)
+    #for name, replacement in renames.items():
+    #if "part" in renames:
+    #df.rename(columns={"part": renames["part"]}, inplace=True)
+    renames = {k:v for k, v in renames.items() if k in df.columns}
+    df.rename(columns=renames, inplace=True)
+    if target_col in df.columns:
+        df[target_col] = df[target_col].astype(bool)
     return df
 
 
@@ -104,12 +109,12 @@ def collect_df(df, target_col="Active", split_col="parts",
     """collects submolecules to dataset"""
     aggregations = dict()
     if split_col in df.columns:
-        print("Found", split_col)
-        aggregations[split_col] = lambda x: split_sep.join(x)
+        print("Found split col:", split_col)
+        aggregations[split_col] = lambda x: (x if isinstance(x, str) else split_sep.join(x))
     if target_col in df.columns:
         print("Found", target_col)
         aggregations[target_col] = lambda x: x.any()
     for col in keep_columns:
         if col  in df.columns:
-            aggregations[col] = lambda x: "first"
+            aggregations[col] = lambda x: x.iloc[0] if x.shape[0] > 0 else None
     return df.groupby(index_col).agg(aggregations)
